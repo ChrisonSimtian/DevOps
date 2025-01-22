@@ -1,0 +1,30 @@
+resources: 
+  repositories: 
+  - repository: DevOps 
+    name: DevOps/DevOps 
+    type: git 
+    ref: master #branch name
+
+trigger: none
+variables:
+  buildConfiguration: 'Release'
+jobs:
+- job: WebApp1
+  displayName: 'Build WebApp1'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - template: buildCoreWebProject.yml@Shared
+    parameters:
+      buildConfiguration: $(buildConfiguration)
+      project: WebApp1
+- job: WebApp2
+  displayName: 'Build WebApp2'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - template: build.yml
+    parameters:
+      buildConFiguration: $(buildConfiguration)
+      project: WebApp2.csproj
+      artifactName: WebApp2

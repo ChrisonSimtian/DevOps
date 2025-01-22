@@ -1,0 +1,60 @@
+# https://learn.microsoft.com/en-us/training/modules/run-quality-tests-build-pipeline/6-perform-code-coverage
+parameters:
+- name: buildConfiguration
+  type: string
+  default: 'DEBUG'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .Net SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+    performMultiLevelLookup: true
+    includePreviewVersions: true
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build the project - ${{parameters.buildConfiguration}}'
+  inputs:
+    command: 'build'
+    arguments: '--configuration ${{parameters.buildConfiguration}}'
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run unit tests - ${{parameters.buildConfiguration}}'
+  condition: succeededOrFailed()
+  inputs:
+    command: 'test'
+    arguments: '--no-build --configuration ${{parameters.buildConfiguration}} /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    publishTestResults: true
+    projects: '**/*.Tests.csproj'
+
+- task: reportgenerator@5
+  displayName: ReportGenerator
+  condition: succeededOrFailed()
+  inputs:
+    reports: '$(Build.SourcesDirectory)/TestResults/Coverage/coverage.opencover.xml'
+    targetdir: '$(Build.SourcesDirectory)/coveragereport'
+    reporttypes: 'HtmlInline_AzurePipelines;Cobertura;Badges'
+    assemblyfilters: '-xunit*'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage report'
+  condition: succeededOrFailed()
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish the project - ${{parameters.buildConfiguration}}'
+  inputs:
+    command: 'publish'
+    projects: '**/*.csproj'
+    publishWebProjects: false
+    arguments: '--no-build --configuration ${{parameters.buildConfiguration}} --output $(Build.ArtifactStagingDirectory)/${{parameters.buildConfiguration}}'
+    zipAfterPublish: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  condition: succeeded()

@@ -1,0 +1,21 @@
+schedules:
+- cron: 0 0 * * *
+  displayName: 'Nightly Unit Tests'
+  branches:
+    include:
+    - master
+
+pool:
+  name: 'Best Start - Container based Agents'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'UAT'
+
+resources: 
+  repositories: 
+  - repository: DevOps 
+    name: DevOps/DevOps 
+    type: git 
+    ref: master #branch name

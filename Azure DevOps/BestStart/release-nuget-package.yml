@@ -1,0 +1,57 @@
+parameters:
+- name: buildConfiguration
+  type: string
+  default: 'Release'
+- name: project
+  type: string
+  default: ''
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install DotNet SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+    performMultiLevelLookup: true
+    includePreviewVersions: true
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: DotNetCoreCLI@2
+  displayName: 'DotNet Build ${{parameters.project}}.csproj'
+  inputs:
+    command: 'build'
+    arguments: '--configuration ${{parameters.buildConfiguration}}'
+    projects: '**/${{parameters.project}}.csproj'
+
+# - task: DotNetCoreCLI@2
+#   displayName: 'Run unit tests - ${{parameters.buildConfiguration}}'
+#   inputs:
+#     command: 'test'
+#     arguments: '--no-build --configuration ${{parameters.buildConfiguration}}'
+#     publishTestResults: true
+#     projects: '**/${{parameters.project}}.Tests.csproj'
+
+- task: CopyFiles@2
+  displayName: 'Stage Nuget Files for ${{parameters.project}}'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: |
+      **/*.nupkg
+      **/*.snupkg
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Nuget Artifacts for ${{parameters.project}}'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'nuget'
+    publishLocation: 'Container'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Push ${{parameters.project}} to Nuget Feed'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '692cf468-2c19-4a57-bfc0-021a6efb8071'

@@ -1,0 +1,54 @@
+parameters:
+- name: buildConfiguration
+  type: string
+  default: 'Release'
+- name: project
+  type: string
+  default: ''
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install DotNet SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+    performMultiLevelLookup: true
+    includePreviewVersions: true
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: DotNetCoreCLI@2
+  displayName: 'DotNet Build ${{parameters.project}}.csproj'
+  inputs:
+    command: 'build'
+    arguments: '--configuration ${{parameters.buildConfiguration}}'
+    projects: '**/${{parameters.project}}.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run unit tests - ${{parameters.buildConfiguration}}'
+  inputs:
+    command: 'test'
+    arguments: '--no-build --configuration ${{parameters.buildConfiguration}}'
+    publishTestResults: true
+    projects: '**/${{parameters.project}}.Tests.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'DotNet Pack ${{parameters.project}}.csproj'
+  inputs:
+    command: 'pack'
+    projects: '**/${{parameters.project}}.csproj'
+    arguments: '--configuration $(buildConfiguration) --include-source --include-symbols -o $(Build.ArtifactStagingDirectory)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'DotNet Publish ${{parameters.project}}.csproj'
+  inputs:
+    command: 'publish'
+    projects: '**/${{parameters.project}}.csproj'
+    arguments: '--configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: false
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact ${{parameters.project}}'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'nuget'
+    publishLocation: 'Container'
