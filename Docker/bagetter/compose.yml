@@ -1,0 +1,10 @@
+services:
+    bagetter:
+        container_name: nuget-server
+        ports:
+            - 5000:8080
+        env_file:
+            - bagetter.env
+        volumes:
+            - ./data:/data
+        image: bagetter/bagetter:latest

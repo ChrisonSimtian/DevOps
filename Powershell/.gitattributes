@@ -1,0 +1,2 @@
+# UTF-8 encoding for powershell scripts
+*.ps1 text eol=lf working-tree-encoding=UTF-8

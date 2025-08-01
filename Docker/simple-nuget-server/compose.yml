@@ -1,0 +1,13 @@
+services:
+    simple-nuget-server:
+        ports:
+            - 5000:80
+        environment:
+            - NUGET_API_KEY=41b9062f-f2d9-4292-a1d2-57262cea872e
+        env_file:
+            - simple-nuget-server.env
+        volumes:
+            - ./nuget/database:/var/www/db
+            - ./nuget/packages:/var/www/packagefiles
+        container_name: nuget-server
+        image: sunside/simple-nuget-server
