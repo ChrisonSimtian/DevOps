@@ -18,3 +18,7 @@ This folder contains some of my compose files and useful containers around DevOp
 ## Azure DevOps
 
 This folder contains samples of my Azure pipelines, mostly from my time at BestStart Educare Limited.
+
+## Helpful Links
+
+- [Microsoft's Azure Naming Tool](https://github.com/mspnp/AzureNamingTool)

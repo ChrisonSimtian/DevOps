@@ -1,0 +1,2 @@
+# Ignore Parameters as those could contain secrets
+*.bicepparam

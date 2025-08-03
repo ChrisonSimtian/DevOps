@@ -1,0 +1,15 @@
+services:
+  azurite:
+    container_name: azurite-emulator
+    env_file:
+      - .env
+    environment:
+      - AZURITE_ACCOUNTS=devstoreaccount1:devstoreaccount1secret # Default account for Azurite
+    restart: unless-stopped
+    volumes:
+      - ./data:/data # Persist data across container restarts
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    ports:
+      - "10000:10000" # Blob service
+      - "10001:10001" # Queue service
+      - "10002:10002" # Table service
