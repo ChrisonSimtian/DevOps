@@ -1,5 +1,12 @@
-param name string
+# Common Settings
 
+This is a helper module to allow shared settings across different bicep modules
+
+## Usage
+
+Paste this in your bicep file
+
+```bicep
 /* Common Settings Parameters */
 @description('Resource Location')
 param location string = resourceGroup().location
@@ -7,7 +14,9 @@ param location string = resourceGroup().location
 @description('Resource Tags')
 @allowed(['CI', 'Devops', 'Prod', 'Regression', 'Test'])
 param environment string
+```
 
+```bicep
 /* Common Settings */
 module settings '../common/settings.bicep' = {
   name: 'settings'
@@ -16,12 +25,4 @@ module settings '../common/settings.bicep' = {
     environment: environment
   }
 }
-
-module storageAccount './modules/storageAccount.bicep' = {
-  name: 'storageAccount'
-  params: {
-    location: settings.outputs.location
-    tags: settings.outputs.tags
-    name: name
-  }
-}
+```

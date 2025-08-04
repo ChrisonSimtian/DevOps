@@ -1,9 +1,15 @@
 param applicationInsightsName string
 param logAnalyticsWorkspaceName string
 
-param location string
+/* Common Settings Parameters */
+@description('Resource Location')
+param location string = resourceGroup().location
+
+@description('Resource Tags')
+@allowed(['CI', 'Devops', 'Prod', 'Regression', 'Test'])
 param environment string
 
+/* Common Settings */
 module settings '../common/settings.bicep' = {
   name: 'settings'
   params: {
@@ -16,7 +22,7 @@ module logAnalyticsWorkspace './modules/logAnalyticsWorkspace.bicep' = {
   name: 'logAnalyticsWorkspace'
   params: {
     name: logAnalyticsWorkspaceName
-    canonicalLocation: settings.outputs.canonicalLocation
+    location: settings.outputs.location
     tags: settings.outputs.tags
   }
 }
@@ -24,7 +30,7 @@ module logAnalyticsWorkspace './modules/logAnalyticsWorkspace.bicep' = {
 module applicationInsights './modules/applicationInsights.bicep' = {
   name: 'applicationInsights'
   params: {
-    canonicalLocation: settings.outputs.canonicalLocation
+    location: settings.outputs.location
     tags: settings.outputs.tags
     name: applicationInsightsName
     logAnalyticsWorkspaceName: logAnalyticsWorkspace.outputs.Name

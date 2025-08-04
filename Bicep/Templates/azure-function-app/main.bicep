@@ -4,7 +4,12 @@ param appServicePlanName string
 param applicationInsightsName string
 param storageAccountName string
 
-param location string
+/* Common Settings Parameters */
+@description('Resource Location')
+param location string = resourceGroup().location
+
+@description('Resource Tags')
+@allowed(['CI', 'Devops', 'Prod', 'Regression', 'Test'])
 param environment string
 
 /* Reference existing Resources */
@@ -29,7 +34,7 @@ module settings '../common/settings.bicep' = {
 module appServicePlan './modules/appServicePlan.bicep' = {
   name: 'appServicePlan'
   params: {
-    canonicalLocation: settings.outputs.canonicalLocation
+    location: settings.outputs.location
     tags: settings.outputs.tags
     name: appServicePlanName
   }
@@ -38,7 +43,7 @@ module appServicePlan './modules/appServicePlan.bicep' = {
 module functionApp './modules/functionApp.bicep' = {
   name: 'functionApp'
   params: {
-    canonicalLocation: settings.outputs.canonicalLocation
+    location: settings.outputs.location
     tags: settings.outputs.tags
     name: functionAppName
     appServicePlanName: appServicePlan.outputs.Name

@@ -2,7 +2,7 @@ param name string
 param appServicePlanName string
 param storageAccountName string
 param applicationInsightsName string
-param canonicalLocation string
+param location string
 param tags object
 
 /* Variables */
@@ -32,7 +32,7 @@ resource applicationInsights_Resource 'microsoft.insights/components@2020-02-02'
 /* Azure Function App, Flex Consumption Plan */
 resource functionApp_Resource 'Microsoft.Web/sites@2024-11-01' = {
   name: name
-  location: canonicalLocation
+  location: location
   tags: union(tags, hiddenLinkTag)
   kind: 'functionapp,linux'
   properties: {

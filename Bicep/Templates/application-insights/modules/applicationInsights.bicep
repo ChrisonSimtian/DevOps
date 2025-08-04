@@ -1,5 +1,5 @@
 param name string
-param canonicalLocation string
+param location string
 param tags object
 param logAnalyticsWorkspaceName string
 
@@ -9,7 +9,7 @@ resource logAnalyticsWorkspace_Resource 'Microsoft.OperationalInsights/workspace
 
 resource components_mfb_erp_func_ae_test_name_resource 'microsoft.insights/components@2020-02-02' = {
   name: name
-  location: canonicalLocation
+  location: location
   tags: tags
   kind: 'web'
   properties: {

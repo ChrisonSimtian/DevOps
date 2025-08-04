@@ -1,10 +1,10 @@
 param name string = 'DefaultWorkspace-9f6bbd17-3dae-40c3-87c5-59ac961a8f72-EAU'
-param canonicalLocation string
+param location string
 param tags object
 
 resource logAnalyticsWorkspace_Resource 'Microsoft.OperationalInsights/workspaces@2025-02-01' = {
   name: name
-  location: canonicalLocation
+  location: location
   tags: tags
   properties: {
     sku: {

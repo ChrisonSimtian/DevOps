@@ -1,10 +1,10 @@
 param name string
-param canonicalLocation string
+param location string
 param tags object
 
 resource serverfarms_ASP_mfberptest_a1ee_name_resource 'Microsoft.Web/serverfarms@2024-11-01' = {
   name: name
-  location: canonicalLocation
+  location: location
   tags: tags
   sku: {
     name: 'FC1'
