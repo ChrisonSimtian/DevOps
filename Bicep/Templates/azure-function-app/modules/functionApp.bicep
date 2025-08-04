@@ -9,7 +9,6 @@ param tags object
 var hiddenLinkTag = {
   'hidden-link: /app-insights-resource-id': applicationInsights_Resource.id
 }
-//var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount_Name};AccountKey=${listKeys(storageAccount_Resource.id, storageAccount_Resource.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
 
 /* References to existing Resources */
 resource appServicePlan_Resource 'Microsoft.Web/serverfarms@2024-11-01' existing = {
@@ -33,8 +32,8 @@ resource applicationInsights_Resource 'microsoft.insights/components@2020-02-02'
 resource functionApp_Resource 'Microsoft.Web/sites@2024-11-01' = {
   name: name
   location: location
-  tags: union(tags, hiddenLinkTag)
   kind: 'functionapp,linux'
+  tags: union(tags, hiddenLinkTag)
   properties: {
     enabled: true
     hostNameSslStates: [

@@ -1,5 +1,6 @@
 param functionAppName string
 param appServicePlanName string
+param appServicePlanSku object
 
 param applicationInsightsName string
 param storageAccountName string
@@ -37,6 +38,7 @@ module appServicePlan './modules/appServicePlan.bicep' = {
     location: settings.outputs.location
     tags: settings.outputs.tags
     name: appServicePlanName
+    sku: appServicePlanSku
   }
 }
 

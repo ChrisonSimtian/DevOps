@@ -1,19 +1,14 @@
 param name string
 param location string
 param tags object
+param sku object
 
-resource serverfarms_ASP_mfberptest_a1ee_name_resource 'Microsoft.Web/serverfarms@2024-11-01' = {
+resource appServicePlan_Resource 'Microsoft.Web/serverfarms@2024-11-01' = {
   name: name
   location: location
-  tags: tags
-  sku: {
-    name: 'FC1'
-    tier: 'FlexConsumption'
-    size: 'FC1'
-    family: 'FC'
-    capacity: 0
-  }
+  sku: sku
   kind: 'functionapp'
+  tags: tags
   properties: {
     perSiteScaling: false
     elasticScaleEnabled: false
@@ -29,5 +24,5 @@ resource serverfarms_ASP_mfberptest_a1ee_name_resource 'Microsoft.Web/serverfarm
   }
 }
 
-output Id string = serverfarms_ASP_mfberptest_a1ee_name_resource.id
-output Name string = serverfarms_ASP_mfberptest_a1ee_name_resource.name
+output Id string = appServicePlan_Resource.id
+output Name string = appServicePlan_Resource.name
