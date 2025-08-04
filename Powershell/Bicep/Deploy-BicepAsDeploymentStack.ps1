@@ -13,9 +13,22 @@
     The name of the resource group where the resources will be deployed.
 .PARAMETER deploymentStackName
     The name of the deployment stack to create or update.
+.PARAMETER bicepFilePath
+    The path to the Bicep file that defines the resources to be deployed.
+.PARAMETER bicepParamFilePath
+    The path to the Bicep parameter file that provides parameters for the deployment.
 .EXAMPLE
-    Deploy-BicepAsDeploymentStack -tenantId "4db41075-b108-4ef0-b2b7-5bc4e44430fb" -subscriptionId "9f6bbd17-3dae-40c3-87c5-59ac961a8f72" -location "australiaeast" -resourceGroupName "mfb-erp-dev" -deploymentStackName "mfb-erp-dev-deployment"
-    This command deploys the Bicep template to create a Service Bus Namespace and related resources.
+    Deploy-BicepAsDeploymentStack -tenantId "00000000-0000-0000-0000-000000000000" -subscriptionId "00000000-0000-0000-0000-000000000000" -location "australiaeast" -resourceGroupName "my-rg-dev" -deploymentStackName "my-deploymentStack" -bicepFilePath "C:\path\to\main.bicep" -bicepParamFilePath "C:\path\to\main.bicepparam.json"
+    This command deploys a Bicep template to create a Service Bus Namespace and related resources in the specified resource group and location.
+.OUTPUTS
+    Outputs the details of the created or updated deployment stack, including its location, provisioning state, and tags.
+.NOTES
+    Requires the Az.Resources module to be installed.
+    Ensure that the Bicep file and parameter file paths are correct before running the script.
+    The script will create a new resource group if it does not already exist.
+    The deployment stack will be created or updated with the specified parameters.
+    If the deployment stack already exists, it will be updated with the new parameters.
+    The script will output the details of the deployment stack after creation or update.
 #>
 function Deploy-BicepAsDeploymentStack {
     [CmdletBinding()]
@@ -40,13 +53,13 @@ function Deploy-BicepAsDeploymentStack {
         [string]
         $deploymentStackName,
 
-        [Parameter()]
+        [Parameter(Mandatory)]
         [string]
-        $bicepFilePath = "main.bicep",
+        $bicepFilePath,
 
-        [Parameter()]
+        [Parameter(Mandatory)]
         [string]
-        $bicepParamFilePath = "main.bicepparam"
+        $bicepParamFilePath
     )
     # Sources:
     # https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/quickstart-create-deployment-stacks?tabs=azure-powershell%2CCLI
@@ -77,14 +90,14 @@ function Deploy-BicepAsDeploymentStack {
 
         # Resolve the Bicep file paths
         Write-Debug "🔄 Resolving Bicep file paths..."
-        $bicepFilePath = Join-Path -Path $PSScriptRoot -ChildPath $bicepFilePath
+        $bicepFilePath = $bicepFilePath
         if (-not (Test-Path $bicepFilePath)) {
             Write-Error "🔴 Bicep file '$bicepFilePath' not found. Please ensure the file exists."
             throw "❌ Bicep file not found. Please check the path and try again."
         }
         Write-Debug "✅ Bicep file resolved: $bicepFilePath"
 
-        $bicepParamFilePath = Join-Path -Path $PSScriptRoot -ChildPath $bicepParamFilePath
+        $bicepParamFilePath = $bicepParamFilePath
         if (-not (Test-Path $bicepParamFilePath)) {
             Write-Error "🔴 Bicep parameter file '$bicepParamFilePath' not found. Please ensure the file exists."
             throw "❌ Bicep parameter file not found. Please check the path and try again."
@@ -94,14 +107,18 @@ function Deploy-BicepAsDeploymentStack {
         Write-Debug "🔄 Creating or updating deployment stack '$deploymentStackName' in resource group '$resourceGroupName'."
         # Create or update the deployment stack using the Bicep template
         # https://learn.microsoft.com/en-us/powershell/module/az.resources/new-azresourcegroupdeploymentstack?view=azps-14.2.0
-        $result = New-AzResourceGroupDeploymentStack `
-            -Name $deploymentStackName `
-            -ResourceGroupName $resourceGroupName `
-            -TemplateFile $bicepFilePath `
-            -TemplateParameterFile $bicepParamFilePath `
-            -ActionOnUnmanage "detachAll" `
-            -DenySettingsMode "none" `
-            -Force # Do not ask for confirmation when overwriting an existing stack.
+        $deploymentStackParameters = @{
+            Name                  = $deploymentStackName
+            ResourceGroupName     = $resourceGroupName
+            TemplateFile          = $bicepFilePath
+            TemplateParameterFile = $bicepParamFilePath
+            ActionOnUnmanage      = "detachAll"
+            DenySettingsMode      = "DenyDelete"
+            # Uncomment the following line to exclude specific principals from deny settings
+            # DenySettingsExcludedPrincipal = @('00000000-0000-0000-0000-000000000000')
+            Force                 = $true # Do not ask for confirmation when overwriting an existing stack.
+        }
+        $result = New-AzResourceGroupDeploymentStack $deploymentStackParameters
 
         $duration = Get-TimeSpan -durationString $result.duration
         Write-Information "📦 Deployment stack '$deploymentStackName' created or updated successfully. Duration: $duration seconds"
@@ -122,11 +139,4 @@ function Deploy-BicepAsDeploymentStack {
     else {
         Write-Error "🔴 Deployment Stack '$deploymentStackName' not found."
     }
-
-    # Delete the deployment stack if needed
-    # Uncomment the following lines to delete the deployment stack after use
-
-    # https://learn.microsoft.com/en-us/powershell/module/az.resources/remove-azresourcegroupdeploymentstack?view=azps-14.2.0
-    # Write-Information "Deleting Deployment Stack '$deploymentStackName'..."
-    # Remove-AzResourceGroupDeploymentStack -Name $deploymentStackName -ResourceGroupName $resourceGroupName
 }
