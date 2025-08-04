@@ -38,7 +38,15 @@ function Deploy-BicepAsDeploymentStack {
 
         [Parameter(Mandatory)]
         [string]
-        $deploymentStackName
+        $deploymentStackName,
+
+        [Parameter()]
+        [string]
+        $bicepFilePath = "main.bicep",
+
+        [Parameter()]
+        [string]
+        $bicepParamFilePath = "main.bicepparam"
     )
     # Sources:
     # https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/quickstart-create-deployment-stacks?tabs=azure-powershell%2CCLI
@@ -63,21 +71,20 @@ function Deploy-BicepAsDeploymentStack {
         Write-Information "✅ Resource group '$resourceGroupName' created successfully."
     }
 
-
     try {
         # Make sure were in the correct directory
         Set-Location $PSScriptRoot
 
         # Resolve the Bicep file paths
         Write-Debug "🔄 Resolving Bicep file paths..."
-        $bicepFilePath = Join-Path -Path $PSScriptRoot -ChildPath "main.bicep"
+        $bicepFilePath = Join-Path -Path $PSScriptRoot -ChildPath $bicepFilePath
         if (-not (Test-Path $bicepFilePath)) {
             Write-Error "🔴 Bicep file '$bicepFilePath' not found. Please ensure the file exists."
             throw "❌ Bicep file not found. Please check the path and try again."
         }
         Write-Debug "✅ Bicep file resolved: $bicepFilePath"
 
-        $bicepParamFilePath = Join-Path -Path $PSScriptRoot -ChildPath "main.bicepparam"
+        $bicepParamFilePath = Join-Path -Path $PSScriptRoot -ChildPath $bicepParamFilePath
         if (-not (Test-Path $bicepParamFilePath)) {
             Write-Error "🔴 Bicep parameter file '$bicepParamFilePath' not found. Please ensure the file exists."
             throw "❌ Bicep parameter file not found. Please check the path and try again."
