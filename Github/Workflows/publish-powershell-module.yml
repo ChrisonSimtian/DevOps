@@ -1,0 +1,21 @@
+name: Publish PowerShell Module
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Publish module to GitHub Packages
+        run: |
+          $token = "${{ secrets.GITHUB_TOKEN }}"
+          Register-PSRepository -Name "GitHubPSRepo" `
+            -SourceLocation "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" `
+            -PublishLocation "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" `
+            -InstallationPolicy Trusted
+          Publish-Module -Path . -Repository "GitHubPSRepo" -NuGetApiKey $token
+        shell: pwsh
