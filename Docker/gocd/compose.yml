@@ -1,0 +1,22 @@
+services:
+  gocd-server:
+    image: gocd/gocd-server:v25.3.0
+    container_name: gocd-server
+    ports:
+      - "8153:8153"
+      - "8154:8154"
+    environment:
+      GO_SERVER_SYSTEM_PROPERTIES: "-Dgo.server.artifact.resolver.plugin=filesystem -Dgo.artifact.fs.root=/var/lib/go-server/artifacts"
+    volumes:
+      - ./data/server/data:/var/lib/go-server
+      - ./data/server/config:/etc/go
+
+  gocd-agent:
+    container_name: gocd-agent
+    image: gocd/gocd-agent-alpine:v25.3.0
+    depends_on:
+      - gocd-server
+    environment:
+      GO_SERVER_URL: http://gocd-server:8153/go
+    volumes:
+      - ./data/agent/data:/var/lib/go-agent

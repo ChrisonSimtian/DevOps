@@ -1,0 +1,15 @@
+services:
+  server:
+    container_name: gitea
+    image: docker.gitea.com/gitea:1.24.3-rootless
+    restart: always
+    environment:
+      - TZ=Pacific/Auckland
+    volumes:
+      - ./data:/var/lib/gitea
+      - ./config:/etc/gitea
+      # - /etc/timezone:/etc/timezone:ro
+      # - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "2222:2222"
