@@ -23,3 +23,7 @@ There is a [Readme](./Powershell/README.md) with interesting tips and tricks.
 ## Helpful Links
 
 - [Microsoft's Azure Naming Tool](https://github.com/mspnp/AzureNamingTool)
+
+## Cool Open Source Projects
+
+[FlubuCore](https://github.com/dotnetcore/FlubuCore)
