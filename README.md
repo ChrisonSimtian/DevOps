@@ -27,3 +27,5 @@ There is a [Readme](./Powershell/README.md) with interesting tips and tricks.
 ## Cool Open Source Projects
 
 [FlubuCore](https://github.com/dotnetcore/FlubuCore)
+[Woodpecker CI](https://woodpecker-ci.org/)
+[Drone IO](https://www.drone.io/)
