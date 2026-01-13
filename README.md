@@ -23,9 +23,13 @@ There is a [Readme](./Powershell/README.md) with interesting tips and tricks.
 ## Helpful Links
 
 - [Microsoft's Azure Naming Tool](https://github.com/mspnp/AzureNamingTool)
+- [Writing on Github](https://docs.github.com/en/get-started/writing-on-github)
+- [Create WinGet Release](https://github.com/microsoft/winget-create)
+- [Powertoys is a good sample project](https://github.com/microsoft/PowerToys)
 
 ## Cool Open Source Projects
 
-[FlubuCore](https://github.com/dotnetcore/FlubuCore)
-[Woodpecker CI](https://woodpecker-ci.org/)
-[Drone IO](https://www.drone.io/)
+- [FlubuCore](https://github.com/dotnetcore/FlubuCore)
+- [Woodpecker CI](https://woodpecker-ci.org/)
+- [Drone IO](https://www.drone.io/)
+- [Log4Brains](https://github.com/thomvaill/log4brains)
