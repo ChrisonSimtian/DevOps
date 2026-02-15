@@ -26,6 +26,7 @@ There is a [Readme](./Powershell/README.md) with interesting tips and tricks.
 - [Writing on Github](https://docs.github.com/en/get-started/writing-on-github)
 - [Create WinGet Release](https://github.com/microsoft/winget-create)
 - [Powertoys is a good sample project](https://github.com/microsoft/PowerToys)
+- [AI Skills over MCP](https://www.pulumi.com/blog/top-8-claude-skills-devops-2026)
 
 ## Cool Open Source Projects
 
